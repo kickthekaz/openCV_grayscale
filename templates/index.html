@@ -1,0 +1,87 @@
+<html>
+<head>
+  <meta charset="UTF-8"/>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <style>
+    .movie {
+      margin: 20px;
+    }
+    .movies {
+      margin: 10px auto;
+      text-align: center;
+    }
+    #dropbox {
+      width: 500px;
+      height: 500px;
+      line-height: 500px;
+      margin: 20px auto;
+      background-color: #F2F2F2;
+      text-align: center;
+      border: 1px solid #D8D8D8;
+      font-size: 40px;
+      color: #D8D8D8;
+    }
+    #file {
+      display: none;
+    }
+    .frame {
+      width: 400px;
+      height: 500px;
+      margin: 20px auto;
+    }
+    #video {
+      width: 100%;
+      height: auto;
+    }
+  </style>
+</head>
+<body>
+  <!-- <div class="frame"> -->
+    <!-- <img id="video" src="{{ url_for('video_feed') }}"> -->
+  <!-- </div> -->
+  <form class="form" action="/upload" method="post" enctype="multipart/form-data" name="form">
+    <div id="dropbox">
+      <p>ドロップ</p>
+      <input id="file" type="file" value="ファイルを選択" name="file">
+    </div>
+  </form>
+
+  <div class="movies">
+    <form action="/download" method="post">
+      {% for movie in movies %}
+        <input class="movie" type="submit" value="{{ movie }}" name="movie">
+      {% endfor %}
+    </form>
+  </div>
+
+  <script>
+    var dropbox = document.getElementById("dropbox");
+    var form_file = document.getElementById("file");
+
+    dropbox.addEventListener("dragover", function(e) {
+      e.stopPropagation();
+      e.preventDefault();
+      this.style.background = "#ffffff";
+    }, false);
+
+    dropbox.addEventListener("dragleave", function(e) {
+      e.stopPropagation();
+      e.preventDefault();
+      this.style.background = "#F2F2F2";
+    }, false);
+
+    dropbox.addEventListener("drop", function(e) {
+      e.stopPropagation();
+      e.preventDefault();
+      this.style.background = "#F2F2F2";
+
+      var data = e.dataTransfer.files;
+      form_file.files = data;
+
+      document.form.submit()
+    }, false);
+
+  </script>
+
+</body>
+</html>
