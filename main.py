@@ -1,5 +1,6 @@
 from flask import Flask, request, render_template, redirect, url_for, send_file, Response
 from os import listdir
+from datetime import datetime
 
 import os
 import time
@@ -40,35 +41,30 @@ def download():
 @app.route('/upload', methods=['POST'])
 def upload():
 
-  # 画像処理
-  # img = cv2.imread('aa.jpeg')
-  # img_gs = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-  # cv2.imwrite('./static/data/aaa.jpeg', img_gs)
-
   fs = request.files['file']
-  video_path = os.path.join('./static/data/',fs.filename)
+  date = datetime.now().strftime("%y%m%d%H%M%S")
+  video_path = os.path.join('./static/data/', fs.filename.split('.', 1)[0] + date + ".mov")
   fs.save(video_path)
 
-  # time.sleep(2)
+  time.sleep(3)
 
   cap = cv2.VideoCapture(video_path)
-  # cap = cv2.VideoCapture('baby.mov')
+
+  width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+  height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+  count = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+  fps = int(cap.get(cv2.CAP_PROP_FPS))
 
   fourcc = cv2.VideoWriter_fourcc('m', 'p', '4', 'v')
-  out = cv2.VideoWriter(video_path, fourcc, 20.0, (320, 568), isColor=False)
+  out = cv2.VideoWriter(video_path, fourcc, fps, (width, height), isColor=False)
 
-  # while(cap.isOpened()):
-  while True:
+  for x in range(1, count):
     ret, frame = cap.read()
-    if ret == True:
+    if ret:
       gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-      # print(out)
-      # cv2.imshow('view', gray);
       out.write(gray)
-      if cv2.waitKey(1) & 0xFF == 27:
-        break
     else:
-      break
+      print(x)
 
   out.release()
   cap.release()
